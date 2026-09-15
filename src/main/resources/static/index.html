@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIAP X - Processamento Distribuído de Vídeos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0a0e17;
+            --bg-surface: #111827;
+            --bg-surface-hover: #1f2937;
+            --bg-card: rgba(17, 24, 39, 0.75);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-focus: #6366f1;
+            
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --primary-hover: #4f46e5;
+            
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-glow: 0 0 35px rgba(99, 102, 241, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            background: var(--primary-gradient);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .btn-link:hover {
+            color: var(--text-main);
+        }
+
+        .user-pill {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-surface);
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            font-size: 0.875rem;
+        }
+
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-surface-hover);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        main {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 24px;
+            flex: 1;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* Auth Section */
+        .auth-container {
+            max-width: 440px;
+            margin: 40px auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: var(--bg-base);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-surface);
+            color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Dashboard (Hidden initially) */
+        #dashboard {
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* Upload Box */
+        .upload-card {
+            background: var(--bg-card);
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 40px 24px;
+            text-align: center;
+            margin-bottom: 40px;
+            transition: all 0.2s;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .upload-card:hover, .upload-card.drag-over {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .upload-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .upload-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+        }
+
+        .badge-list {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .status-RECEBIDO {
+            background: rgba(59, 130, 246, 0.15);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .status-PROCESSANDO {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fcd34d;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-CONCLUIDO {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-ERRO {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Table */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 14px 24px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-main);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .empty-state {
+            padding: 48px 24px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        /* Alert Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+            font-size: 0.875rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        footer {
+            border-top: 1px solid var(--border-subtle);
+            padding: 24px 32px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🎬</div>
+            <span>FIAP <span style="color: #a855f7;">X</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="/swagger-ui.html" target="_blank" class="btn-link">Swagger Docs</a>
+            <div id="userPill" class="user-pill">
+                <div class="avatar" id="userAvatar">U</div>
+                <span id="userEmailDisplay">usuario@fiap.com</span>
+                <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;" onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero">
+            <h1>Processamento Distribuído de Vídeos</h1>
+            <p>Plataforma assíncrona orientada a eventos. Envie vídeos pesados, extraia frames a 1 fps com FFmpeg e baixe o ZIP consolidado instantaneamente.</p>
+        </div>
+
+        <!-- AUTH FORM -->
+        <div id="authSection" class="auth-container">
+            <div class="tabs">
+                <button class="tab-btn active" id="tabLogin" onclick="switchAuthTab('login')">Entrar</button>
+                <button class="tab-btn" id="tabRegister" onclick="switchAuthTab('register')">Cadastrar</button>
+            </div>
+
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group" id="nameGroup" style="display: none;">
+                    <label for="userName">Nome Completo</label>
+                    <input type="text" id="userName" class="form-control" placeholder="Ex: Michel Oliveira">
+                </div>
+
+                <div class="form-group">
+                    <label for="userEmail">E-mail</label>
+                    <input type="email" id="userEmail" class="form-control" placeholder="seu.email@exemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="userPassword">Senha</label>
+                    <input type="password" id="userPassword" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 8px;" id="authSubmitBtn">
+                    Entrar na Plataforma
+                </button>
+            </form>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total de Vídeos</div>
+                    <div class="stat-value" id="statTotal">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Concluídos</div>
+                    <div class="stat-value" style="color: var(--success);" id="statCompleted">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Em Fila / Processamento</div>
+                    <div class="stat-value" style="color: var(--warning);" id="statProcessing">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total de Frames Extraídos</div>
+                    <div class="stat-value" style="color: #a855f7;" id="statFrames">0</div>
+                </div>
+            </div>
+
+            <!-- Upload Area -->
+            <div class="upload-card" id="uploadDropzone" onclick="document.getElementById('videoFileInput').click()">
+                <input type="file" id="videoFileInput" accept="video/mp4,video/x-matroska,video/quicktime,video/x-msvideo,video/webm" style="display: none;" onchange="handleFileSelected(event)">
+                <div class="upload-icon">🚀</div>
+                <h3>Arraste e solte seu vídeo aqui</h3>
+                <p>Ou clique para selecionar um arquivo do seu computador (máx 500MB)</p>
+                <div class="badge-list">
+                    <span class="badge">.MP4</span>
+                    <span class="badge">.AVI</span>
+                    <span class="badge">.MOV</span>
+                    <span class="badge">.MKV</span>
+                    <span class="badge">.WEBM</span>
+                </div>
+            </div>
+
+            <!-- Table of Videos -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3 style="font-weight: 700; font-size: 1.1rem;">Fila de Processamento & Downloads</h3>
+                    <button class="btn btn-outline" style="font-size: 0.75rem; padding: 6px 12px;" onclick="fetchVideos()">🔄 Atualizar</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome do Arquivo</th>
+                                <th>Tamanho</th>
+                                <th>Frames</th>
+                                <th>Status</th>
+                                <th>Data de Envio</th>
+                                <th style="text-align: right;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="videoTableBody">
+                            <tr>
+                                <td colspan="7" class="empty-state">Carregando vídeos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <footer>
+        FIAP SOAT - Software Architecture • Tech Challenge Fase 05 (Hackathon) • Desenvolvido por Michel Marinho de Oliveira
+    </footer>
+
+    <script>
+        let currentAuthMode = 'login';
+        let authToken = localStorage.getItem('fiapx_token');
+        let pollingInterval = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (authToken) {
+                showDashboard();
+            } else {
+                showAuth();
+            }
+            setupDragAndDrop();
+        });
+
+        function switchAuthTab(mode) {
+            currentAuthMode = mode;
+            document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+            document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
+            document.getElementById('nameGroup').style.display = mode === 'register' ? 'block' : 'none';
+            document.getElementById('authSubmitBtn').innerText = mode === 'register' ? 'Criar Conta' : 'Entrar na Plataforma';
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            const name = document.getElementById('userName').value;
+
+            const endpoint = currentAuthMode === 'register' ? '/auth/register' : '/auth/login';
+            const payload = currentAuthMode === 'register' ? { name, email, password } : { email, password };
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    showToast(data.message || 'Erro na autenticação', 'danger');
+                    return;
+                }
+
+                authToken = data.token;
+                localStorage.setItem('fiapx_token', data.token);
+                localStorage.setItem('fiapx_email', data.email);
+                localStorage.setItem('fiapx_name', data.name);
+                showToast('Login realizado com sucesso!', 'success');
+                showDashboard();
+            } catch (err) {
+                showToast('Falha na comunicação com o servidor', 'danger');
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('userPill').style.display = 'flex';
+
+            const email = localStorage.getItem('fiapx_email') || 'usuario@fiap.com';
+            document.getElementById('userEmailDisplay').innerText = email;
+            document.getElementById('userAvatar').innerText = email[0].toUpperCase();
+
+            fetchVideos();
+            if (!pollingInterval) {
+                pollingInterval = setInterval(fetchVideos, 3000);
+            }
+        }
+
+        function showAuth() {
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('userPill').style.display = 'none';
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('fiapx_token');
+            localStorage.removeItem('fiapx_email');
+            localStorage.removeItem('fiapx_name');
+            authToken = null;
+            showAuth();
+            showToast('Você saiu da conta', 'info');
+        }
+
+        async function fetchVideos() {
+            if (!authToken) return;
+
+            try {
+                const res = await fetch('/api/videos?size=50', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (res.status === 401) {
+                    logout();
+                    return;
+                }
+
+                const data = await res.json();
+                renderVideoTable(data.content || []);
+            } catch (err) {
+                console.error('Erro ao buscar vídeos:', err);
+            }
+        }
+
+        function renderVideoTable(videos) {
+            const tbody = document.getElementById('videoTableBody');
+            
+            let total = videos.length;
+            let completed = 0;
+            let processing = 0;
+            let totalFrames = 0;
+
+            if (videos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Nenhum vídeo enviado ainda. Arraste um arquivo acima para começar!</td></tr>';
+            } else {
+                tbody.innerHTML = videos.map(v => {
+                    if (v.status === 'CONCLUIDO') completed++;
+                    if (v.status === 'RECEBIDO' || v.status === 'PROCESSANDO') processing++;
+                    if (v.frameCount) totalFrames += v.frameCount;
+
+                    const formattedSize = formatBytes(v.fileSize);
+                    const formattedDate = new Date(v.createdAt).toLocaleString('pt-BR');
+                    
+                    let actionBtn = '-';
+                    if (v.status === 'CONCLUIDO' && v.downloadUrl) {
+                        actionBtn = `<a href="${v.downloadUrl}" class="btn" style="padding: 4px 12px; font-size: 0.75rem;" download>⬇️ Baixar ZIP</a>`;
+                    } else if (v.status === 'ERRO') {
+                        actionBtn = `<span style="color: var(--danger); font-size: 0.75rem;" title="${v.errorMessage || 'Falha no processamento'}">⚠️ Ver Erro</span>`;
+                    }
+
+                    return `
+                        <tr>
+                            <td>#${v.id}</td>
+                            <td><strong>${v.originalFileName}</strong></td>
+                            <td>${formattedSize}</td>
+                            <td>${v.frameCount || '-'}</td>
+                            <td><span class="status-badge status-${v.status}">${v.status}</span></td>
+                            <td>${formattedDate}</td>
+                            <td style="text-align: right;">${actionBtn}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statCompleted').innerText = completed;
+            document.getElementById('statProcessing').innerText = processing;
+            document.getElementById('statFrames').innerText = totalFrames;
+        }
+
+        async function handleFileSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            await uploadFile(file);
+            event.target.value = '';
+        }
+
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('video', file);
+
+            showToast(`Enviando "${file.name}" para a fila de processamento...`, 'info');
+
+            try {
+                const res = await fetch('/api/videos', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` },
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (res.status === 202) {
+                    showToast(`Vídeo #${data.videoId} recebido e enfileirado com sucesso!`, 'success');
+                    fetchVideos();
+                } else {
+                    showToast(data.message || 'Erro ao enviar vídeo', 'danger');
+                }
+            } catch (err) {
+                showToast('Erro ao realizar upload do vídeo', 'danger');
+            }
+        }
+
+        function setupDragAndDrop() {
+            const dropzone = document.getElementById('uploadDropzone');
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropzone.classList.add('drag-over');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('drag-over');
+                }, false);
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    uploadFile(files[0]);
+                }
+            });
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            if (type === 'success') toast.style.borderColor = 'var(--success)';
+            else if (type === 'danger') toast.style.borderColor = 'var(--danger)';
+            else toast.style.borderColor = 'var(--primary)';
+
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
