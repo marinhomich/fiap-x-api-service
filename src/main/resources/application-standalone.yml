@@ -9,6 +9,10 @@ spring:
     password: 
     driver-class-name: org.h2.Driver
 
+  # Modo standalone roda em H2: o schema é gerado pelo Hibernate, não pelo Flyway
+  flyway:
+    enabled: false
+
   jpa:
     hibernate:
       ddl-auto: update

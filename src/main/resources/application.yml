@@ -13,9 +13,15 @@ spring:
     password: ${DB_PASSWORD:fiapx_pass}
     driver-class-name: org.postgresql.Driver
 
+  # Schema versionado em src/main/resources/db/migration. baseline-on-migrate
+  # adota bancos já criados pelo antigo ddl-auto=update sem recriar as tabelas.
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: false
     properties:
       hibernate:
