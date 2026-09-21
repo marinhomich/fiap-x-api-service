@@ -23,6 +23,9 @@
         <jwt.version>0.12.5</jwt.version>
         <cucumber.version>7.16.1</cucumber.version>
         <jacoco.version>0.8.11</jacoco.version>
+        <zonky-spring-test.version>2.5.1</zonky-spring-test.version>
+        <zonky-postgres.version>2.0.7</zonky-postgres.version>
+        <zonky-postgres-binaries.version>16.2.0</zonky-postgres-binaries.version>
     </properties>
 
     <dependencies>
@@ -139,7 +142,33 @@
             <artifactId>junit-platform-suite</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Embedded PostgreSQL: validates Flyway migrations against the JPA entities -->
+        <dependency>
+            <groupId>io.zonky.test</groupId>
+            <artifactId>embedded-database-spring-test</artifactId>
+            <version>${zonky-spring-test.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.zonky.test</groupId>
+            <artifactId>embedded-postgres</artifactId>
+            <version>${zonky-postgres.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.zonky.test.postgres</groupId>
+                <artifactId>embedded-postgres-binaries-bom</artifactId>
+                <version>${zonky-postgres-binaries.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
